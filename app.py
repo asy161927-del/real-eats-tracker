@@ -11,23 +11,27 @@ st.set_page_config(
 )
 
 # ----------------------------------------------------
-# 2. 커스텀 CSS (상단 흑청색 배너 + 탭 달린 노트 스타일 보드)
+# 2. 커스텀 CSS (배경 톤다운 + 파일철/노트 보드 일체화)
 # ----------------------------------------------------
 st.markdown("""
 <style>
-    /* 전체 여백 조절 */
+    /* 전체 배경을 밝은 그레이-베이지로 톤다운하여 흰색 붕 뜨는 현상 제거 */
+    .stApp {
+        background-color: #f1f5f9 !important;
+    }
+
     .block-container {
-        padding-top: 1.8rem !important;
+        padding-top: 2rem !important;
         padding-bottom: 3.5rem !important;
-        max-width: 820px !important;
+        max-width: 800px !important;
     }
     
     /* 1. 상단 다크 배너 */
     .top-hero-banner {
         background-color: #0f172a;
         color: #ffffff;
-        border-radius: 14px;
-        padding: 28px 24px 22px 24px;
+        border-radius: 16px;
+        padding: 30px 24px 24px 24px;
         text-align: center;
         margin-bottom: 2rem;
         box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
@@ -45,7 +49,7 @@ st.markdown("""
         margin-bottom: 20px;
     }
 
-    /* 상단 통계 수치 바 (2개만 균등 배치) */
+    /* 통계 2개 */
     .hero-stats-row {
         display: flex;
         justify-content: space-around;
@@ -73,54 +77,50 @@ st.markdown("""
         letter-spacing: -0.01em;
     }
 
-    /* 2. 바인더/노트 상단 탭 */
+    /* 2. 서류철/노트 탭 */
     .notebook-tab-bar {
         display: flex;
-        margin-left: 14px;
+        margin-left: 20px;
         margin-bottom: -1px;
     }
     .notebook-tab {
         background-color: #ffffff;
-        border: 1.5px solid #e2e8f0;
-        border-bottom: 2px solid #ffffff;
-        border-radius: 10px 10px 0 0;
-        padding: 8px 22px;
-        font-size: 0.88rem;
+        border: 2px solid #cbd5e1;
+        border-bottom: 3px solid #ffffff;
+        border-radius: 12px 12px 0 0;
+        padding: 10px 24px;
+        font-size: 0.92rem;
         font-weight: 700;
         color: #0f172a;
         z-index: 2;
     }
-    .notebook-tab-sub {
-        background-color: #f1f5f9;
-        border: 1px solid #e2e8f0;
-        border-bottom: none;
-        border-radius: 10px 10px 0 0;
-        padding: 8px 18px;
-        font-size: 0.84rem;
-        font-weight: 500;
-        color: #64748b;
-        margin-left: 4px;
+
+    /* 3. 노트 보드 (검색창이 들어가는 실제 흰색 종이 판) */
+    div[data-testid="stVerticalBlock"] > div:has(div.notebook-tab-bar) + div {
+        background-color: #ffffff !important;
+        border: 2px solid #cbd5e1 !important;
+        border-radius: 16px !important;
+        padding: 24px 20px 16px 20px !important;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.06) !important;
     }
 
-    /* 3. 노트/바인더 본체 박스 (포괄 컨테이너 느낌) */
-    .notebook-body {
-        background-color: #ffffff;
-        border: 1.5px solid #e2e8f0;
-        border-radius: 0 14px 14px 14px;
-        padding: 24px 24px 18px 24px;
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
-        margin-bottom: 1.8rem;
+    /* 입력창 자체 스타일 (진한 테두리 & 시원한 크기) */
+    div[data-testid="stTextInput"] input {
+        border: 2px solid #0f172a !important;
+        border-radius: 8px !important;
+        font-size: 1rem !important;
+        padding: 12px 14px !important;
     }
 
-    /* 검색 팁 박스 (노트 안의 연한 알림줄) */
+    /* 팁 박스 */
     .note-tip-bar {
         background-color: #f8fafc;
-        border: 1px solid #edf2f7;
         border-radius: 8px;
         padding: 10px 14px;
         font-size: 0.82rem;
         color: #475569;
-        margin-top: 12px;
+        margin-top: 10px;
+        border: 1px solid #e2e8f0;
     }
 
     /* 결과 카드 */
@@ -129,8 +129,8 @@ st.markdown("""
         color: #ffffff;
         border-radius: 10px;
         padding: 18px 22px;
-        margin-top: 1rem;
-        margin-bottom: 1.2rem;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
     }
     .result-addr-title {
         font-size: 0.9rem;
@@ -158,7 +158,7 @@ def load_data():
 df = load_data()
 
 # ----------------------------------------------------
-# 4. 상단 다크 배너 (2개 핵심 통계만 노출)
+# 4. 상단 다크 배너 (2개 통계)
 # ----------------------------------------------------
 st.markdown(f"""
 <div class="top-hero-banner">
@@ -178,19 +178,19 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ----------------------------------------------------
-# 5. 노트/바인더 스타일 검색 영역 (탭 + 화이트 보드)
+# 5. 서류철 탭 & 검색 컨테이너
 # ----------------------------------------------------
 st.markdown("""
 <div class="notebook-tab-bar">
-    <div class="notebook-tab">📋 인허가 간이 조회</div>
-    <div class="notebook-tab-sub">공공데이터 매칭</div>
+    <div class="notebook-tab">📋 복수 인허가 간이 조회</div>
 </div>
 """, unsafe_allow_html=True)
 
-with st.container():
+search_box_container = st.container(border=True)
+with search_box_container:
     query = st.text_input(
         label="검색창",
-        placeholder="배달앱 상호명 또는 동/도로명 주소를 입력하세요 (예: 역삼동, 신림동, 테헤란로, 피자)",
+        placeholder="배달앱 상호명 또는 동/도로명 주소를 입력하세요 (예: 역삼동, 테헤란로, 피자)",
         label_visibility="collapsed"
     ).strip()
     
@@ -256,7 +256,7 @@ with st.expander("ℹ️ 정보 해석에 관한 법적 고지 및 유의사항 
 
     **2. 객관적 행정정보 제공 및 비방 금지 원칙**
     * 본 서비스는 공공데이터포털(data.go.kr)의 지방행정인허가(일반음식점) 공공데이터에 근거한 사실 정보만을 제공하며, 특정 업체를 비방·평가하거나 샵인샵 영업 여부를 단정하지 않습니다.
-    * 이용자는 본 조회 결과를 특정 업체에 대한 불필요한 오해나 부정적인 판단의 근거로 단정해서는 안 되며, 대표자 신상이나 개인정보는 일체 수집·제공하지 않습니다.
+    * 이용자는 본 조회 결과를 특정 업체에 대한 불필요한 오해나 부정적인 평가의 근거로 단정해서는 안 되며, 대표자 신상이나 개인정보는 일체 수집·제공하지 않습니다.
 
     **3. 데이터의 최신성 및 정정 요청 안내**
     * 공공데이터 갱신 주기 및 지자체 행정 반영 시점에 따라 현재 폐업·이전·상호 변경된 정보가 일부 포함되어 있을 수 있습니다.
