@@ -11,96 +11,104 @@ st.set_page_config(
 )
 
 # ----------------------------------------------------
-# 2. 블랙 배너 & 미니멀 검색 UI 전용 커스텀 CSS
+# 2. 커스텀 CSS (상단 흑청색 배너 + 중앙 흰색 검색 보드)
 # ----------------------------------------------------
 st.markdown("""
 <style>
-    /* 상단 기본 여백 */
     .block-container {
-        padding-top: 2rem !important;
+        padding-top: 1.5rem !important;
         padding-bottom: 3rem !important;
-        max-width: 820px !important;
+        max-width: 800px !important;
     }
     
-    /* 1. 상단 다크/블랙 배너 */
-    .black-hero-banner {
-        background-color: #111827;
+    /* 1. 상단 다크 배너 */
+    .top-hero-banner {
+        background-color: #0f172a;
         color: #ffffff;
-        border-radius: 14px;
-        padding: 32px 24px;
+        border-radius: 16px 16px 0 0;
+        padding: 30px 20px 24px 20px;
         text-align: center;
-        margin-bottom: 2rem;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     }
-    .black-hero-title {
+    .top-title {
         font-size: 2rem;
         font-weight: 800;
-        letter-spacing: -0.03em;
-        margin-bottom: 6px;
         color: #ffffff;
+        margin-bottom: 6px;
+        letter-spacing: -0.02em;
     }
-    .black-hero-desc {
+    .top-subtitle {
         font-size: 0.92rem;
-        color: #9ca3af;
-        margin-bottom: 24px;
+        color: #94a3b8;
+        margin-bottom: 22px;
     }
 
-    /* 배너 내부 3대 핵심 지표 그리드 */
-    .banner-stats-grid {
+    /* 2. 상단 통계 수치 바 (배너 내부) */
+    .hero-stats-row {
         display: flex;
         justify-content: space-around;
         align-items: center;
-        border-top: 1px solid #374151;
-        padding-top: 20px;
-        margin-top: 10px;
+        border-top: 1px solid #334155;
+        padding-top: 18px;
+        margin-top: 5px;
     }
-    .banner-stat-item {
+    .hero-stat-col {
         flex: 1;
-        border-right: 1px solid #374151;
+        text-align: center;
+        border-right: 1px solid #334155;
     }
-    .banner-stat-item:last-child {
+    .hero-stat-col:last-child {
         border-right: none;
     }
-    .banner-stat-label {
+    .hero-stat-label {
         font-size: 0.8rem;
-        color: #9ca3af;
+        color: #94a3b8;
         margin-bottom: 4px;
         font-weight: 500;
     }
-    .banner-stat-num {
-        font-size: 1.45rem;
-        font-weight: 700;
-        color: #f9fafb;
-        letter-spacing: -0.02em;
+    .hero-stat-value {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: #38bdf8;
+        letter-spacing: -0.01em;
     }
 
-    /* 검색창 힌트 스타일링 */
-    .search-hint {
-        font-size: 0.82rem;
-        color: #6b7280;
-        margin-top: -8px;
-        margin-bottom: 1.5rem;
+    /* 3. 중앙 흰색 검색 보드 카드 */
+    .search-card-wrapper {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-top: none;
+        border-radius: 0 0 16px 16px;
+        padding: 24px 24px 18px 24px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07);
+        margin-bottom: 2rem;
     }
 
-    /* 결과 카드 (어두운 먹색/네이비 톤) */
-    .result-summary-card {
-        background-color: #1f2937;
+    /* 검색창 힌트 문구 */
+    .search-tips-box {
+        font-size: 0.83rem;
+        color: #64748b;
+        margin-top: 10px;
+        text-align: left;
+    }
+
+    /* 결과 카드 (다크 네이비) */
+    .result-alert-box {
+        background-color: #0f172a;
         color: #ffffff;
         border-radius: 10px;
         padding: 16px 20px;
-        margin-top: 1rem;
-        margin-bottom: 1.2rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        margin-top: 1.2rem;
+        margin-bottom: 1rem;
     }
-    .result-summary-card .addr-text {
+    .result-addr-title {
         font-size: 0.9rem;
-        color: #9ca3af;
+        color: #94a3b8;
         margin-bottom: 4px;
     }
-    .result-summary-card .count-text {
-        font-size: 1.2rem;
+    .result-count-val {
+        font-size: 1.25rem;
         font-weight: 700;
-        color: #60a5fa;
+        color: #38bdf8;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -118,40 +126,44 @@ def load_data():
 df = load_data()
 
 # ----------------------------------------------------
-# 4. 상단 블랙 배너 (타이틀 + 3대 핵심 지표)
+# 4. 상단 다크 배너 (타이틀 + 통계 수치만 노출)
 # ----------------------------------------------------
 st.markdown(f"""
-<div class="black-hero-banner">
-    <div class="black-hero-title">🏍️ 한집 (Han-Jib)</div>
-    <div class="black-hero-desc">공공데이터 기반 동일 주소 복수 음식점 인허가 현황 조회</div>
-    
-    <div class="banner-stats-grid">
-        <div class="banner-stat-item">
-            <div class="banner-stat-label">분석 대상 공공 인허가</div>
-            <div class="banner-stat-num">{len(df):,}</div>
+<div class="top-hero-banner">
+    <div class="top-title">🏍️ 한집 (Han-Jib)</div>
+    <div class="top-subtitle">공공데이터 기반 동일 주소 복수 음식점 인허가 현황 조회</div>
+    <div class="hero-stats-row">
+        <div class="hero-stat-col">
+            <div class="hero-stat-label">분석 대상 공공 인허가</div>
+            <div class="hero-stat-value">{len(df):,}</div>
         </div>
-        <div class="banner-stat-item">
-            <div class="banner-stat-label">복수 등록 주소지</div>
-            <div class="banner-stat-num">{df['address'].nunique():,}</div>
+        <div class="hero-stat-col">
+            <div class="hero-stat-label">복수 등록 주소지</div>
+            <div class="hero-stat-value">{df['address'].nunique():,}</div>
         </div>
-        <div class="banner-stat-item">
-            <div class="banner-stat-label">데이터 기준 지역</div>
-            <div class="banner-stat-num">전국 17개 시도</div>
+        <div class="hero-stat-col">
+            <div class="hero-stat-label">데이터 기준 지역</div>
+            <div class="hero-stat-value">전국 17개 시도</div>
         </div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
 # ----------------------------------------------------
-# 5. 중앙 단일 검색창 (서울 주요 지역 예시 적용)
+# 5. 흰색 보드 안의 검색창 영역
 # ----------------------------------------------------
-query = st.text_input(
-    label="검색창",
-    placeholder="배달앱 상호명 또는 동/도로명 주소를 입력하세요 (예: 역삼동, 신림동, 테헤란로, 피자)",
-    label_visibility="collapsed"
-).strip()
-
-st.markdown('<div class="search-hint">💡 <b>검색 팁:</b> 서울 주요 동/도로명(예: 역삼동, 화양동, 마포대로)이나 상호의 핵심 단어로 검색해 보세요.</div>', unsafe_allow_html=True)
+with st.container():
+    query = st.text_input(
+        label="검색창",
+        placeholder="배달앱 상호명 또는 동/도로명 주소를 입력하세요 (예: 역삼동, 신림동, 테헤란로, 피자)",
+        label_visibility="collapsed"
+    ).strip()
+    
+    st.markdown("""
+    <div class="search-tips-box">
+        💡 <b>검색 팁:</b> 서울 주요 동/도로명(예: 역삼동, 화양동, 마포대로)이나 상호의 핵심 단어로 검색해 보세요.
+    </div>
+    """, unsafe_allow_html=True)
 
 # ----------------------------------------------------
 # 6. 검색 결과 출력
@@ -184,9 +196,9 @@ if query:
         
         # 결과 요약 카드
         st.markdown(f"""
-        <div class="result-summary-card">
-            <div class="addr-text">📍 조회 소재지: {selected_addr}</div>
-            <div class="count-text">해당 주소지 인허가 매장 총 {store_count}개</div>
+        <div class="result-alert-box">
+            <div class="result-addr-title">📍 조회 소재지: {selected_addr}</div>
+            <div class="result-count-val">해당 주소지 인허가 매장 총 {store_count}개</div>
         </div>
         """, unsafe_allow_html=True)
             
@@ -198,7 +210,7 @@ if query:
         st.table(display_table)
 
 # ----------------------------------------------------
-# 7. 하단 법적 고지 및 안내 (접이식)
+# 7. 하단 법적 고지 및 유의사항
 # ----------------------------------------------------
 st.markdown("<br>", unsafe_allow_html=True)
 with st.expander("ℹ️ 정보 해석에 관한 법적 고지 및 유의사항 (필독)"):
