@@ -1,4 +1,3 @@
-Python
 import streamlit as st
 import pandas as pd
 
@@ -21,7 +20,6 @@ st.caption("행정안전부 일반음식점 인허가 공공데이터를 바탕�
 @st.cache_data
 def load_data():
     df = pd.read_csv("delivery_stores.csv")
-    # 검색 편의성을 위한 공백 제거 컬럼 생성
     df['clean_name'] = df['store_name'].astype(str).str.replace(" ", "")
     df['clean_addr'] = df['address'].astype(str).str.replace(" ", "")
     return df
