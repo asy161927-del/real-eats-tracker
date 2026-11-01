@@ -11,17 +11,17 @@ st.set_page_config(
 )
 
 # ----------------------------------------------------
-# 2. 커스텀 CSS (완성도 높은 단일 카드 & 검색창 정돈)
+# 2. 커스텀 CSS (카드형 검색 컨테이너 & 배너 스타일)
 # ----------------------------------------------------
 st.markdown("""
 <style>
     /* 전체 배경 톤다운 (소프트 그레이) */
     .stApp {
-        background-color: #f8fafc !important;
+        background-color: #f1f5f9 !important;
     }
 
     .block-container {
-        padding-top: 2.2rem !important;
+        padding-top: 2rem !important;
         padding-bottom: 4rem !important;
         max-width: 760px !important;
     }
@@ -30,11 +30,11 @@ st.markdown("""
     .top-hero-banner {
         background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
         color: #ffffff;
-        border-radius: 18px;
-        padding: 32px 24px 26px 24px;
+        border-radius: 16px;
+        padding: 30px 24px 24px 24px;
         text-align: center;
         margin-bottom: 1.5rem;
-        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.25);
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.2);
     }
     .top-title {
         font-size: 2.1rem;
@@ -44,9 +44,9 @@ st.markdown("""
         letter-spacing: -0.03em;
     }
     .top-subtitle {
-        font-size: 0.95rem;
+        font-size: 0.92rem;
         color: #94a3b8;
-        margin-bottom: 24px;
+        margin-bottom: 22px;
         font-weight: 500;
     }
 
@@ -55,15 +55,15 @@ st.markdown("""
         display: flex;
         justify-content: space-around;
         align-items: center;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        padding-top: 18px;
     }
     .hero-stat-col {
         flex: 1;
         text-align: center;
     }
     .hero-stat-col:first-child {
-        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        border-right: 1px solid rgba(255, 255, 255, 0.12);
     }
     .hero-stat-label {
         font-size: 0.82rem;
@@ -78,35 +78,38 @@ st.markdown("""
         letter-spacing: -0.02em;
     }
 
-    /* 2. 중앙 단일 화이트 검색 카드 (이중 박스 제거) */
-    div[data-testid="stVerticalBlock"] > div:has(div[data-testid="stTextInput"]) {
+    /* 2. 중앙 공식 보더 컨테이너 커스텀 (흰색 배경 + 그림자) */
+    div[data-testid="stVerticalBlockBorderWrapper"] {
         background-color: #ffffff !important;
-        border: 1px solid #e2e8f0 !important;
-        border-radius: 16px !important;
-        padding: 22px 24px !important;
-        box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05) !important;
-        margin-bottom: 1.5rem !important;
+        border-radius: 14px !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+        padding: 10px !important;
+        margin-bottom: 1rem !important;
     }
 
-    /* 3. 검색창 높이 & 테두리 마감 */
+    /* 3. 검색창 높이 & 포커스 테두리 */
     div[data-testid="stTextInput"] input {
-        height: 52px !important;
-        border: 1.5px solid #cbd5e1 !important;
-        border-radius: 10px !important;
-        font-size: 1rem !important;
-        padding-left: 16px !important;
-        transition: all 0.2s ease-in-out;
+        height: 50px !important;
+        border: 1.5px solid #94a3b8 !important;
+        border-radius: 8px !important;
+        font-size: 0.98rem !important;
+        padding-left: 14px !important;
     }
     div[data-testid="stTextInput"] input:focus {
         border-color: #0f172a !important;
-        box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1) !important;
+        box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.1) !important;
     }
 
-    /* 검색 팁 바 */
-    .search-tip-text {
-        font-size: 0.83rem;
-        color: #64748b;
-        margin-top: 10px;
+    /* 검색 팁 박스 */
+    .search-tip-box {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 0.82rem;
+        color: #475569;
+        margin-top: 12px;
         line-height: 1.5;
     }
 
@@ -166,19 +169,20 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ----------------------------------------------------
-# 5. 중앙 단일 검색 카드
+# 5. 중앙 단일 검색 카드 (공식 border=True 컨테이너 사용)
 # ----------------------------------------------------
-query = st.text_input(
-    label="검색창",
-    placeholder="배달앱 상호명 또는 동/도로명 주소를 입력하세요 (예: 역삼동, 신림동, 테헤란로, 피자)",
-    label_visibility="collapsed"
-).strip()
+with st.container(border=True):
+    query = st.text_input(
+        label="검색창",
+        placeholder="배달앱 상호명 또는 동/도로명 주소를 입력하세요 (예: 역삼동, 신림동, 테헤란로, 피자)",
+        label_visibility="collapsed"
+    ).strip()
 
-st.markdown("""
-<div class="search-tip-text">
-    💡 <b>검색 팁:</b> 서울 주요 동/도로명(예: 역삼동, 화양동, 마포대로)이나 상호의 핵심 단어로 검색해 보세요.
-</div>
-""", unsafe_allow_html=True)
+    st.markdown("""
+    <div class="search-tip-box">
+        💡 <b>검색 팁:</b> 서울 주요 동/도로명(예: 역삼동, 화양동, 마포대로)이나 상호의 핵심 단어로 검색해 보세요.
+    </div>
+    """, unsafe_allow_html=True)
 
 # ----------------------------------------------------
 # 6. 검색 결과 출력
