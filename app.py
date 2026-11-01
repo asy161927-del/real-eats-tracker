@@ -11,23 +11,26 @@ st.set_page_config(
 )
 
 # ----------------------------------------------------
-# 2. 커스텀 CSS (상단 흑청색 배너 + 중앙 흰색 검색 보드)
+# 2. 커스텀 CSS (상단 흑청색 배너 + 탭 달린 노트 스타일 보드)
 # ----------------------------------------------------
 st.markdown("""
 <style>
+    /* 전체 여백 조절 */
     .block-container {
-        padding-top: 1.5rem !important;
-        padding-bottom: 3rem !important;
-        max-width: 800px !important;
+        padding-top: 1.8rem !important;
+        padding-bottom: 3.5rem !important;
+        max-width: 820px !important;
     }
     
     /* 1. 상단 다크 배너 */
     .top-hero-banner {
         background-color: #0f172a;
         color: #ffffff;
-        border-radius: 16px 16px 0 0;
-        padding: 30px 20px 24px 20px;
+        border-radius: 14px;
+        padding: 28px 24px 22px 24px;
         text-align: center;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
     }
     .top-title {
         font-size: 2rem;
@@ -39,66 +42,95 @@ st.markdown("""
     .top-subtitle {
         font-size: 0.92rem;
         color: #94a3b8;
-        margin-bottom: 22px;
+        margin-bottom: 20px;
     }
 
-    /* 2. 상단 통계 수치 바 (배너 내부) */
+    /* 상단 통계 수치 바 (2개만 균등 배치) */
     .hero-stats-row {
         display: flex;
         justify-content: space-around;
         align-items: center;
         border-top: 1px solid #334155;
-        padding-top: 18px;
-        margin-top: 5px;
+        padding-top: 16px;
     }
     .hero-stat-col {
         flex: 1;
         text-align: center;
+    }
+    .hero-stat-col:first-child {
         border-right: 1px solid #334155;
     }
-    .hero-stat-col:last-child {
-        border-right: none;
-    }
     .hero-stat-label {
-        font-size: 0.8rem;
+        font-size: 0.82rem;
         color: #94a3b8;
         margin-bottom: 4px;
         font-weight: 500;
     }
     .hero-stat-value {
-        font-size: 1.4rem;
+        font-size: 1.55rem;
         font-weight: 800;
         color: #38bdf8;
         letter-spacing: -0.01em;
     }
 
-    /* 3. 중앙 흰색 검색 보드 카드 */
-    .search-card-wrapper {
+    /* 2. 바인더/노트 상단 탭 */
+    .notebook-tab-bar {
+        display: flex;
+        margin-left: 14px;
+        margin-bottom: -1px;
+    }
+    .notebook-tab {
         background-color: #ffffff;
+        border: 1.5px solid #e2e8f0;
+        border-bottom: 2px solid #ffffff;
+        border-radius: 10px 10px 0 0;
+        padding: 8px 22px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #0f172a;
+        z-index: 2;
+    }
+    .notebook-tab-sub {
+        background-color: #f1f5f9;
         border: 1px solid #e2e8f0;
-        border-top: none;
-        border-radius: 0 0 16px 16px;
-        padding: 24px 24px 18px 24px;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07);
-        margin-bottom: 2rem;
-    }
-
-    /* 검색창 힌트 문구 */
-    .search-tips-box {
-        font-size: 0.83rem;
+        border-bottom: none;
+        border-radius: 10px 10px 0 0;
+        padding: 8px 18px;
+        font-size: 0.84rem;
+        font-weight: 500;
         color: #64748b;
-        margin-top: 10px;
-        text-align: left;
+        margin-left: 4px;
     }
 
-    /* 결과 카드 (다크 네이비) */
+    /* 3. 노트/바인더 본체 박스 (포괄 컨테이너 느낌) */
+    .notebook-body {
+        background-color: #ffffff;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 0 14px 14px 14px;
+        padding: 24px 24px 18px 24px;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+        margin-bottom: 1.8rem;
+    }
+
+    /* 검색 팁 박스 (노트 안의 연한 알림줄) */
+    .note-tip-bar {
+        background-color: #f8fafc;
+        border: 1px solid #edf2f7;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 0.82rem;
+        color: #475569;
+        margin-top: 12px;
+    }
+
+    /* 결과 카드 */
     .result-alert-box {
         background-color: #0f172a;
         color: #ffffff;
         border-radius: 10px;
-        padding: 16px 20px;
-        margin-top: 1.2rem;
-        margin-bottom: 1rem;
+        padding: 18px 22px;
+        margin-top: 1rem;
+        margin-bottom: 1.2rem;
     }
     .result-addr-title {
         font-size: 0.9rem;
@@ -126,7 +158,7 @@ def load_data():
 df = load_data()
 
 # ----------------------------------------------------
-# 4. 상단 다크 배너 (타이틀 + 통계 수치만 노출)
+# 4. 상단 다크 배너 (2개 핵심 통계만 노출)
 # ----------------------------------------------------
 st.markdown(f"""
 <div class="top-hero-banner">
@@ -141,17 +173,20 @@ st.markdown(f"""
             <div class="hero-stat-label">복수 등록 주소지</div>
             <div class="hero-stat-value">{df['address'].nunique():,}</div>
         </div>
-        <div class="hero-stat-col">
-            <div class="hero-stat-label">데이터 기준 지역</div>
-            <div class="hero-stat-value">전국 17개 시도</div>
-        </div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
 # ----------------------------------------------------
-# 5. 흰색 보드 안의 검색창 영역
+# 5. 노트/바인더 스타일 검색 영역 (탭 + 화이트 보드)
 # ----------------------------------------------------
+st.markdown("""
+<div class="notebook-tab-bar">
+    <div class="notebook-tab">📋 인허가 간이 조회</div>
+    <div class="notebook-tab-sub">공공데이터 매칭</div>
+</div>
+""", unsafe_allow_html=True)
+
 with st.container():
     query = st.text_input(
         label="검색창",
@@ -160,7 +195,7 @@ with st.container():
     ).strip()
     
     st.markdown("""
-    <div class="search-tips-box">
+    <div class="note-tip-bar">
         💡 <b>검색 팁:</b> 서울 주요 동/도로명(예: 역삼동, 화양동, 마포대로)이나 상호의 핵심 단어로 검색해 보세요.
     </div>
     """, unsafe_allow_html=True)
@@ -194,7 +229,7 @@ if query:
         cluster = df[df['address'] == selected_addr]
         store_count = len(cluster)
         
-        # 결과 요약 카드
+        # 결과 요약 박스
         st.markdown(f"""
         <div class="result-alert-box">
             <div class="result-addr-title">📍 조회 소재지: {selected_addr}</div>
@@ -221,7 +256,7 @@ with st.expander("ℹ️ 정보 해석에 관한 법적 고지 및 유의사항 
 
     **2. 객관적 행정정보 제공 및 비방 금지 원칙**
     * 본 서비스는 공공데이터포털(data.go.kr)의 지방행정인허가(일반음식점) 공공데이터에 근거한 사실 정보만을 제공하며, 특정 업체를 비방·평가하거나 샵인샵 영업 여부를 단정하지 않습니다.
-    * 이용자는 본 조회 결과를 특정 업체에 대한 불필요한 오해나 부정적인 평가의 근거로 단정해서는 안 되며, 대표자 신상이나 개인정보는 일체 수집·제공하지 않습니다.
+    * 이용자는 본 조회 결과를 특정 업체에 대한 불필요한 오해나 부정적인 판단의 근거로 단정해서는 안 되며, 대표자 신상이나 개인정보는 일체 수집·제공하지 않습니다.
 
     **3. 데이터의 최신성 및 정정 요청 안내**
     * 공공데이터 갱신 주기 및 지자체 행정 반영 시점에 따라 현재 폐업·이전·상호 변경된 정보가 일부 포함되어 있을 수 있습니다.
