@@ -2,20 +2,111 @@ import streamlit as st
 import pandas as pd
 
 # ----------------------------------------------------
-# 1. 페이지 기본 설정 및 브랜딩 (라이더 이모티콘 🏍️ 적용)
+# 1. 페이지 설정
 # ----------------------------------------------------
 st.set_page_config(
-    page_title="한집(Han-Jib) - 공공데이터 기반 복수 음식점 인허가 조회 서비스",
+    page_title="한집(Han-Jib) - 공공데이터 기반 복수 음식점 인허가 조회",
     page_icon="🏍️",
-    layout="wide"
+    layout="centered"
 )
 
-st.title("🏍️ 한집 (Han-Jib)")
-st.subheader("공공데이터 기반 복수 음식점 인허가 조회 서비스")
-st.caption("행정안전부 일반음식점 인허가 공공데이터를 바탕으로 동일 소재지에 등록된 복수 음식점 인허가 현황을 객관적으로 조회합니다.")
+# ----------------------------------------------------
+# 2. 커스텀 CSS (신뢰감을 주는 흑청색/다크 네이비 테마)
+# ----------------------------------------------------
+st.markdown("""
+<style>
+    /* 전체 여백 및 폰트 */
+    .block-container {
+        padding-top: 2.5rem;
+        padding-bottom: 3rem;
+        max-width: 780px;
+    }
+    
+    /* 헤더 텍스트 스타일링 */
+    .brand-title {
+        font-size: 2.4rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 0.2rem;
+        text-align: center;
+        letter-spacing: -0.03em;
+    }
+    .brand-subtitle {
+        font-size: 1.05rem;
+        color: #334155;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 0.4rem;
+    }
+    .brand-caption {
+        font-size: 0.88rem;
+        color: #64748b;
+        text-align: center;
+        margin-bottom: 1.8rem;
+    }
+    
+    /* 상단 미니 현황 바 */
+    .stat-pill {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        background-color: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 9999px;
+        padding: 6px 18px;
+        font-size: 0.82rem;
+        color: #475569;
+        margin: 0 auto 1.8rem auto;
+        width: fit-content;
+    }
+    .stat-pill strong {
+        color: #0f172a;
+    }
+
+    /* 검색창 힌트 스타일링 */
+    .search-hint {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-top: -10px;
+        margin-bottom: 1.5rem;
+        text-align: left;
+    }
+
+    /* 결과 요약 카드 (다크 네이비 테두리 & 배경) */
+    .result-summary-card {
+        background-color: #0f172a;
+        color: #ffffff;
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.1);
+    }
+    .result-summary-card .addr-text {
+        font-size: 0.95rem;
+        color: #94a3b8;
+        margin-bottom: 4px;
+    }
+    .result-summary-card .count-text {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #38bdf8;
+    }
+
+    /* 인라인 뱃지 */
+    .category-badge {
+        background-color: #e2e8f0;
+        color: #1e293b;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 6px;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 # ----------------------------------------------------
-# 2. 데이터 로드 및 전처리 캐싱
+# 3. 데이터 로드 및 캐싱
 # ----------------------------------------------------
 @st.cache_data
 def load_data():
@@ -27,49 +118,55 @@ def load_data():
 df = load_data()
 
 # ----------------------------------------------------
-# 3. 핵심 현황 지표 (중립적 통계 명칭 적용)
+# 4. 헤더 및 통합 검색창 UI
 # ----------------------------------------------------
-col_stat1, col_stat2 = st.columns(2)
-with col_stat1:
-    st.metric("동일 주소 복수 등록 매장 수", f"{len(df):,}개")
-with col_stat2:
-    st.metric("복수 매장 등록 주소 수", f"{df['address'].nunique():,}곳")
+st.markdown('<div class="brand-title">🏍️ 한집 (Han-Jib)</div>', unsafe_allow_html=True)
+st.markdown('<div class="brand-subtitle">공공데이터 기반 복수 음식점 인허가 간이 조회기</div>', unsafe_allow_html=True)
+st.markdown('<div class="brand-caption">행정안전부 일반음식점 인허가 데이터 기반 동일 소재지 등록 현황 검색</div>', unsafe_allow_html=True)
 
-st.markdown("---")
+# 간이 현황 뱃지 (더치트 스타일)
+st.markdown(f'''
+<div class="stat-pill">
+    <span>등록 매장 <strong>{len(df):,}개</strong></span>
+    <span>•</span>
+    <span>밀집 주소 <strong>{df["address"].nunique():,}곳</strong></span>
+</div>
+''', unsafe_allow_html=True)
+
+# 단일 통합 검색창 (더치트/홈택스 방식)
+query = st.text_input(
+    label="검색창",
+    placeholder="배달앱 상호명 또는 동/도로명 주소를 입력하세요",
+    label_visibility="collapsed"
+).strip()
+
+st.markdown('<div class="search-hint">💡 <b>검색 예시:</b> 불당동, 두정동, 원성동, 와촌동, 피자, 버거, 탕수육 등</div>', unsafe_allow_html=True)
 
 # ----------------------------------------------------
-# 4. 검색 인터페이스
+# 5. 검색 결과 렌더링
 # ----------------------------------------------------
-search_type = st.radio(
-    "검색 기준을 선택하세요:",
-    ("식당/상호명으로 검색", "지역/동/도로명 주소로 검색"),
-    horizontal=True
-)
-
-search_placeholder = "예: 김치찌개, 푸드, 치킨, 피자 등" if search_type == "식당/상호명으로 검색" else "예: 두정동, 불당동, 원성동, 강남대로 등"
-query = st.text_input("검색어를 입력하세요:", placeholder=search_placeholder).strip()
-
 if query:
     clean_q = query.replace(" ", "")
     
-    if search_type == "식당/상호명으로 검색":
-        matched_stores = df[df['clean_name'].str.contains(clean_q, na=False)]
-    else:
-        matched_stores = df[df['clean_addr'].str.contains(clean_q, na=False)]
-        
+    # 상호명 또는 주소지 동시 매칭
+    matched_stores = df[
+        df['clean_name'].str.contains(clean_q, na=False) | 
+        df['clean_addr'].str.contains(clean_q, na=False)
+    ]
+    
     if matched_stores.empty:
-        st.warning(f"'{query}'에 대한 등록 정보가 없습니다.")
-        st.info("💡 공공데이터 인허가 법적 상호와 배달앱 표기 상호가 상이할 수 있습니다. 읍·면·동 이름 또는 도로명으로 검색해 보세요.")
+        st.warning(f"검색어 **'{query}'**에 대한 등록 정보가 없습니다.")
+        st.info("공공데이터 인허가상 법적 상호와 배달앱 표기 상호가 상이할 수 있습니다. 읍·면·동 이름 또는 도로명으로 다시 검색해 보세요.")
     else:
         unique_addrs = matched_stores['address'].unique()
-        st.success(f"총 {len(unique_addrs)}곳의 주소지에서 일치하는 인허가 정보를 확인했습니다.")
         
-        # 복수 주소지 선택 드롭다운
+        # 일치하는 주소지가 여러 개인 경우 직관적인 선택 드롭다운 제공
         if len(unique_addrs) > 1:
+            st.markdown(f"**총 `{len(unique_addrs)}곳`의 연관 소재지가 발견되었습니다.**")
             selected_addr = st.selectbox(
                 "확인할 주소지를 선택하세요:",
                 options=unique_addrs,
-                format_func=lambda x: f"{x} (해당 주소 등록 매장 {len(df[df['address'] == x])}개)"
+                format_func=lambda x: f"{x} (등록 매장 {len(df[df['address'] == x])}개)"
             )
         else:
             selected_addr = unique_addrs[0]
@@ -77,12 +174,15 @@ if query:
         cluster = df[df['address'] == selected_addr]
         store_count = len(cluster)
         
-        st.markdown("---")
-        st.subheader("소재지 인허가 상세 현황")
-        st.markdown(f"**조회 주소지:** `{selected_addr}`")
-        st.info(f"ℹ️ 해당 주소지에 행정 인허가 기준 **총 {store_count}개 음식점**이 등록되어 있습니다.")
+        # 더치트 스타일의 다크 네이비 요약 카드
+        st.markdown(f'''
+        <div class="result-summary-card">
+            <div class="addr-text">📍 조회 소재지: {selected_addr}</div>
+            <div class="count-text">해당 주소지 등록 매장 총 {store_count}개</div>
+        </div>
+        ''', unsafe_allow_html=True)
             
-        # 대표자 및 개인정보를 배제하고 상호명과 인허가 업태만 출력
+        # 상세 매장 목록
         display_table = cluster[['store_name', 'category']].copy()
         display_table.columns = ['인허가 상호명', '인허가 업태']
         display_table.reset_index(drop=True, inplace=True)
@@ -91,10 +191,10 @@ if query:
         st.table(display_table)
 
 # ----------------------------------------------------
-# 5. 법적 안전장치 및 정보 해석 유의사항 (필독 고지)
+# 6. 법적 안전장치 및 유의사항 (접이식 기본 닫힘 구조로 깔끔함 유지)
 # ----------------------------------------------------
-st.markdown("---")
-with st.expander("ℹ️ 정보 해석에 관한 유의사항 및 법적 고지 (필독)", expanded=True):
+st.markdown("<br>", unsafe_allow_html=True)
+with st.expander("ℹ️ 정보 해석에 관한 법적 고지 및 유의사항 (필독)"):
     st.markdown("""
     **1. 동일 주소 등록과 운영 주체의 명확한 구분**
     * **동일 주소 등록이 동일 사업자를 의미하지 않습니다.** 본 서비스는 행정 인허가상 소재지(주소)가 같거나 유사한 매장을 기계적으로 집계한 것일 뿐이며, **각 매장의 실제 운영자나 대표자가 동일인임을 나타내는 것이 결코 아닙니다.**
