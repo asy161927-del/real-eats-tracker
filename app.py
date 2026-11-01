@@ -1,16 +1,17 @@
+Python
 import streamlit as st
 import pandas as pd
 
 # ----------------------------------------------------
-# 1. 페이지 기본 설정 및 브랜딩
+# 1. 페이지 기본 설정 및 브랜딩 (라이더 이모티콘 🏍️ 적용)
 # ----------------------------------------------------
 st.set_page_config(
     page_title="한집(Han-Jib) - 공공데이터 기반 복수 음식점 인허가 조회 서비스",
-    page_icon="🏠",
+    page_icon="🏍️",
     layout="wide"
 )
 
-st.title("🏠 한집 (Han-Jib)")
+st.title("🏍️ 한집 (Han-Jib)")
 st.subheader("공공데이터 기반 복수 음식점 인허가 조회 서비스")
 st.caption("행정안전부 일반음식점 인허가 공공데이터를 바탕으로 동일 소재지에 등록된 복수 음식점 인허가 현황을 객관적으로 조회합니다.")
 
