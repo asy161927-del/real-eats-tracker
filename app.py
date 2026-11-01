@@ -11,58 +11,59 @@ st.set_page_config(
 )
 
 # ----------------------------------------------------
-# 2. 커스텀 CSS (배경 톤다운 + 파일철/노트 보드 일체화)
+# 2. 커스텀 CSS (완성도 높은 단일 카드 & 검색창 정돈)
 # ----------------------------------------------------
 st.markdown("""
 <style>
-    /* 전체 배경을 밝은 그레이-베이지로 톤다운하여 흰색 붕 뜨는 현상 제거 */
+    /* 전체 배경 톤다운 (소프트 그레이) */
     .stApp {
-        background-color: #f1f5f9 !important;
+        background-color: #f8fafc !important;
     }
 
     .block-container {
-        padding-top: 2rem !important;
-        padding-bottom: 3.5rem !important;
-        max-width: 800px !important;
+        padding-top: 2.2rem !important;
+        padding-bottom: 4rem !important;
+        max-width: 760px !important;
     }
     
-    /* 1. 상단 다크 배너 */
+    /* 1. 상단 다크 네이비 배너 */
     .top-hero-banner {
-        background-color: #0f172a;
+        background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
         color: #ffffff;
-        border-radius: 16px;
-        padding: 30px 24px 24px 24px;
+        border-radius: 18px;
+        padding: 32px 24px 26px 24px;
         text-align: center;
-        margin-bottom: 2rem;
-        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+        margin-bottom: 1.5rem;
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.25);
     }
     .top-title {
-        font-size: 2rem;
+        font-size: 2.1rem;
         font-weight: 800;
         color: #ffffff;
         margin-bottom: 6px;
-        letter-spacing: -0.02em;
+        letter-spacing: -0.03em;
     }
     .top-subtitle {
-        font-size: 0.92rem;
+        font-size: 0.95rem;
         color: #94a3b8;
-        margin-bottom: 20px;
+        margin-bottom: 24px;
+        font-weight: 500;
     }
 
-    /* 통계 2개 */
+    /* 통계 2개 그리드 */
     .hero-stats-row {
         display: flex;
         justify-content: space-around;
         align-items: center;
-        border-top: 1px solid #334155;
-        padding-top: 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 20px;
     }
     .hero-stat-col {
         flex: 1;
         text-align: center;
     }
     .hero-stat-col:first-child {
-        border-right: 1px solid #334155;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
     }
     .hero-stat-label {
         font-size: 0.82rem;
@@ -71,66 +72,53 @@ st.markdown("""
         font-weight: 500;
     }
     .hero-stat-value {
-        font-size: 1.55rem;
+        font-size: 1.65rem;
         font-weight: 800;
         color: #38bdf8;
-        letter-spacing: -0.01em;
+        letter-spacing: -0.02em;
     }
 
-    /* 2. 서류철/노트 탭 */
-    .notebook-tab-bar {
-        display: flex;
-        margin-left: 20px;
-        margin-bottom: -1px;
-    }
-    .notebook-tab {
-        background-color: #ffffff;
-        border: 2px solid #cbd5e1;
-        border-bottom: 3px solid #ffffff;
-        border-radius: 12px 12px 0 0;
-        padding: 10px 24px;
-        font-size: 0.92rem;
-        font-weight: 700;
-        color: #0f172a;
-        z-index: 2;
-    }
-
-    /* 3. 노트 보드 (검색창이 들어가는 실제 흰색 종이 판) */
-    div[data-testid="stVerticalBlock"] > div:has(div.notebook-tab-bar) + div {
+    /* 2. 중앙 단일 화이트 검색 카드 (이중 박스 제거) */
+    div[data-testid="stVerticalBlock"] > div:has(div[data-testid="stTextInput"]) {
         background-color: #ffffff !important;
-        border: 2px solid #cbd5e1 !important;
+        border: 1px solid #e2e8f0 !important;
         border-radius: 16px !important;
-        padding: 24px 20px 16px 20px !important;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.06) !important;
+        padding: 22px 24px !important;
+        box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05) !important;
+        margin-bottom: 1.5rem !important;
     }
 
-    /* 입력창 자체 스타일 (진한 테두리 & 시원한 크기) */
+    /* 3. 검색창 높이 & 테두리 마감 */
     div[data-testid="stTextInput"] input {
-        border: 2px solid #0f172a !important;
-        border-radius: 8px !important;
+        height: 52px !important;
+        border: 1.5px solid #cbd5e1 !important;
+        border-radius: 10px !important;
         font-size: 1rem !important;
-        padding: 12px 14px !important;
+        padding-left: 16px !important;
+        transition: all 0.2s ease-in-out;
+    }
+    div[data-testid="stTextInput"] input:focus {
+        border-color: #0f172a !important;
+        box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1) !important;
     }
 
-    /* 팁 박스 */
-    .note-tip-bar {
-        background-color: #f8fafc;
-        border-radius: 8px;
-        padding: 10px 14px;
-        font-size: 0.82rem;
-        color: #475569;
+    /* 검색 팁 바 */
+    .search-tip-text {
+        font-size: 0.83rem;
+        color: #64748b;
         margin-top: 10px;
-        border: 1px solid #e2e8f0;
+        line-height: 1.5;
     }
 
-    /* 결과 카드 */
+    /* 4. 결과 요약 카드 */
     .result-alert-box {
         background-color: #0f172a;
         color: #ffffff;
-        border-radius: 10px;
+        border-radius: 12px;
         padding: 18px 22px;
-        margin-top: 1.5rem;
-        margin-bottom: 1rem;
+        margin-top: 1.2rem;
+        margin-bottom: 1.2rem;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
     }
     .result-addr-title {
         font-size: 0.9rem;
@@ -158,7 +146,7 @@ def load_data():
 df = load_data()
 
 # ----------------------------------------------------
-# 4. 상단 다크 배너 (2개 통계)
+# 4. 상단 다크 배너 (2대 핵심 지표)
 # ----------------------------------------------------
 st.markdown(f"""
 <div class="top-hero-banner">
@@ -178,27 +166,19 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ----------------------------------------------------
-# 5. 서류철 탭 & 검색 컨테이너
+# 5. 중앙 단일 검색 카드
 # ----------------------------------------------------
+query = st.text_input(
+    label="검색창",
+    placeholder="배달앱 상호명 또는 동/도로명 주소를 입력하세요 (예: 역삼동, 신림동, 테헤란로, 피자)",
+    label_visibility="collapsed"
+).strip()
+
 st.markdown("""
-<div class="notebook-tab-bar">
-    <div class="notebook-tab">📋 복수 인허가 간이 조회</div>
+<div class="search-tip-text">
+    💡 <b>검색 팁:</b> 서울 주요 동/도로명(예: 역삼동, 화양동, 마포대로)이나 상호의 핵심 단어로 검색해 보세요.
 </div>
 """, unsafe_allow_html=True)
-
-search_box_container = st.container(border=True)
-with search_box_container:
-    query = st.text_input(
-        label="검색창",
-        placeholder="배달앱 상호명 또는 동/도로명 주소를 입력하세요 (예: 역삼동, 테헤란로, 피자)",
-        label_visibility="collapsed"
-    ).strip()
-    
-    st.markdown("""
-    <div class="note-tip-bar">
-        💡 <b>검색 팁:</b> 서울 주요 동/도로명(예: 역삼동, 화양동, 마포대로)이나 상호의 핵심 단어로 검색해 보세요.
-    </div>
-    """, unsafe_allow_html=True)
 
 # ----------------------------------------------------
 # 6. 검색 결과 출력
@@ -245,10 +225,10 @@ if query:
         st.table(display_table)
 
 # ----------------------------------------------------
-# 7. 하단 법적 고지 및 유의사항
+# 7. 하단 법적 고지 및 유의사항 (기본 닫힘 처리)
 # ----------------------------------------------------
 st.markdown("<br>", unsafe_allow_html=True)
-with st.expander("ℹ️ 정보 해석에 관한 법적 고지 및 유의사항 (필독)"):
+with st.expander("ℹ️ 정보 해석에 관한 법적 고지 및 유의사항 (필독)", expanded=False):
     st.markdown("""
     **1. 동일 주소 등록과 운영 주체의 명확한 구분**
     * **동일 주소 등록이 동일 사업자를 의미하지 않습니다.** 본 서비스는 행정 인허가상 소재지(주소)가 같거나 유사한 매장을 기계적으로 집계한 것일 뿐이며, **각 매장의 실제 운영자나 대표자가 동일인임을 나타내는 것이 결코 아닙니다.**
@@ -256,7 +236,7 @@ with st.expander("ℹ️ 정보 해석에 관한 법적 고지 및 유의사항 
 
     **2. 객관적 행정정보 제공 및 비방 금지 원칙**
     * 본 서비스는 공공데이터포털(data.go.kr)의 지방행정인허가(일반음식점) 공공데이터에 근거한 사실 정보만을 제공하며, 특정 업체를 비방·평가하거나 샵인샵 영업 여부를 단정하지 않습니다.
-    * 이용자는 본 조회 결과를 특정 업체에 대한 불필요한 오해나 부정적인 평가의 근거로 단정해서는 안 되며, 대표자 신상이나 개인정보는 일체 수집·제공하지 않습니다.
+    * 이용자는 본 조회 결과를 특정 업체에 대한 불필요한 오해나 부정적인 판단의 근거로 단정해서는 안 되며, 대표자 신상이나 개인정보는 일체 수집·제공하지 않습니다.
 
     **3. 데이터의 최신성 및 정정 요청 안내**
     * 공공데이터 갱신 주기 및 지자체 행정 반영 시점에 따라 현재 폐업·이전·상호 변경된 정보가 일부 포함되어 있을 수 있습니다.
